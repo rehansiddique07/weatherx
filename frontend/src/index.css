@@ -1,20 +1,57 @@
+/* =========================================================
+   WEATHERX GLOBAL RESET
+========================================================= */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  min-height: 100vh;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  color: #17213a;
+
   background:
+    radial-gradient(
+      circle at 8% 10%,
+      rgba(132, 122, 255, 0.30),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 92% 12%,
+      rgba(72, 190, 255, 0.28),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(184, 128, 255, 0.22),
+      transparent 38%
+    ),
     linear-gradient(
       135deg,
-      #dbeafe,
-      #eff6ff,
-      #f8fafc
+      #eaf4ff 0%,
+      #f5f4ff 35%,
+      #eef9ff 68%,
+      #f7efff 100%
     );
-  min-height: 100vh;
-  color: #172033;
+
+  background-attachment: fixed;
 }
 
 button,
@@ -22,91 +59,281 @@ input {
   font-family: inherit;
 }
 
-/* =========================================
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
    WEATHER PAGE
-========================================= */
+========================================================= */
 
 .weather-page {
   min-height: 100vh;
+
+  position: relative;
+
+  isolation: isolate;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse 600px 300px at 5% 5%,
+      rgba(255, 255, 255, 0.75),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 550px 280px at 95% 15%,
+      rgba(255, 255, 255, 0.65),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 650px 320px at 50% 100%,
+      rgba(255, 255, 255, 0.55),
+      transparent 70%
+    );
 }
 
-/* =========================================
+
+/* =========================================================
+   CLOUD BACKGROUND
+========================================================= */
+
+.weather-page::before,
+.weather-page::after {
+  content: "";
+
+  position: fixed;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  border-radius: 50%;
+
+  filter: blur(8px);
+}
+
+
+/* Cloud 1 */
+
+.weather-page::before {
+  width: 520px;
+  height: 220px;
+
+  top: 80px;
+  left: -150px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.50) 38%,
+      rgba(255, 255, 255, 0.12) 62%,
+      transparent 75%
+    );
+
+  animation:
+    weatherCloudLeft 14s ease-in-out infinite;
+}
+
+
+/* Cloud 2 */
+
+.weather-page::after {
+  width: 600px;
+  height: 240px;
+
+  right: -180px;
+  bottom: 50px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.46) 40%,
+      rgba(255, 255, 255, 0.10) 65%,
+      transparent 76%
+    );
+
+  animation:
+    weatherCloudRight 17s ease-in-out infinite;
+}
+
+
+@keyframes weatherCloudLeft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(45px, 15px, 0);
+  }
+}
+
+
+@keyframes weatherCloudRight {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-45px, -12px, 0);
+  }
+}
+
+
+/* =========================================================
    HEADER
-========================================= */
+========================================================= */
 
 .weather-header {
   width: 100%;
+
   padding: 18px 7%;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+
+  z-index: 20;
+
+  background:
+    rgba(255, 255, 255, 0.78);
 
   border-bottom:
     1px solid
-    rgba(148, 163, 184, 0.2);
+    rgba(255, 255, 255, 0.70);
 
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  box-shadow:
+    0 8px 30px
+    rgba(79, 70, 229, 0.06);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
+
+
+/* =========================================================
+   LOGO
+========================================================= */
 
 .weather-logo {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
   font-size: 25px;
-  font-weight: 700;
+
+  font-weight: 800;
+
+  letter-spacing: -0.6px;
+
   color: #2563eb;
+
+  cursor: default;
 }
+
+
+/* =========================================================
+   USER SECTION
+========================================================= */
 
 .user-section {
   display: flex;
+
   align-items: center;
+
   gap: 18px;
 
   font-size: 15px;
+
   color: #475569;
+}
+
+.user-section strong {
+  color: #1e293b;
 }
 
 .user-section button {
   border: none;
-  background: #2563eb;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
+
   color: white;
 
-  padding: 9px 18px;
+  padding: 10px 19px;
 
-  border-radius: 9px;
+  border-radius: 11px;
 
   font-size: 14px;
 
+  font-weight: 650;
+
   cursor: pointer;
 
-  transition: 0.2s ease;
+  box-shadow:
+    0 7px 18px
+    rgba(37, 99, 235, 0.20);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .user-section button:hover {
-  background: #1d4ed8;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+
+  filter: brightness(1.05);
+
+  box-shadow:
+    0 11px 25px
+    rgba(37, 99, 235, 0.28);
 }
 
-/* =========================================
+
+/* =========================================================
    MAIN CONTAINER
-========================================= */
+========================================================= */
 
 .weather-container {
-  width: min(1000px, 92%);
+  width: min(1100px, 92%);
 
   margin: 0 auto;
 
-  padding: 55px 0 70px;
+  padding: 60px 0 80px;
+
+  position: relative;
+
+  z-index: 2;
 }
 
 .weather-container > h1 {
   text-align: center;
 
-  font-size: 42px;
-  font-weight: 750;
+  font-size: 44px;
+
+  font-weight: 800;
+
+  letter-spacing: -1.5px;
 
   color: #0f172a;
 
@@ -120,79 +347,117 @@ input {
 
   font-size: 16px;
 
+  line-height: 1.6;
+
   margin-bottom: 35px;
 }
 
-/* =========================================
+
+/* =========================================================
    SEARCH
-========================================= */
+========================================================= */
 
 .weather-search {
-  max-width: 650px;
+  max-width: 700px;
 
   margin: 0 auto 20px;
 
   display: flex;
 
-  gap: 10px;
+  gap: 11px;
 }
 
 .weather-search input {
   flex: 1;
 
-  height: 52px;
+  height: 56px;
 
-  padding: 0 18px;
+  padding: 0 20px;
 
   border:
     1px solid
-    #cbd5e1;
+    rgba(148, 163, 184, 0.35);
 
-  border-radius: 12px;
+  border-radius: 15px;
 
   outline: none;
 
-  background: white;
-
-  font-size: 16px;
+  background:
+    rgba(255, 255, 255, 0.82);
 
   color: #0f172a;
 
+  font-size: 16px;
+
   box-shadow:
-    0 4px 15px
-    rgba(15, 23, 42, 0.05);
+    0 8px 25px
+    rgba(15, 23, 42, 0.06);
+
+  backdrop-filter: blur(10px);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.weather-search input::placeholder {
+  color: #94a3b8;
+}
+
+.weather-search input:hover {
+  background: rgba(255, 255, 255, 0.95);
+
+  border-color: #bfdbfe;
 }
 
 .weather-search input:focus {
-  border-color: #2563eb;
+  background: #ffffff;
+
+  border-color: #6366f1;
 
   box-shadow:
-    0 0 0 3px
-    rgba(37, 99, 235, 0.12);
+    0 0 0 4px
+      rgba(99, 102, 241, 0.10),
+    0 10px 30px
+      rgba(15, 23, 42, 0.08);
 }
 
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
 .search-button {
+  min-width: 125px;
+
+  height: 56px;
+
+  padding: 0 22px;
+
   display: flex;
 
   align-items: center;
   justify-content: center;
 
-  min-width: 115px;
-  height: 52px;
-
-  padding: 0 20px;
+  gap: 8px;
 
   border: none;
 
-  border-radius: 12px;
+  border-radius: 15px;
 
-  background: #2563eb;
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
 
   color: white;
 
   font-size: 16px;
 
-  font-weight: 600;
+  font-weight: 700;
 
   cursor: pointer;
 
@@ -200,57 +465,84 @@ input {
 
   flex-shrink: 0;
 
-  transition: 0.2s ease;
+  box-shadow:
+    0 10px 24px
+    rgba(37, 99, 235, 0.24);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
-.search-button:hover {
-  background: #1d4ed8;
+.search-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  filter: brightness(1.05);
+
+  box-shadow:
+    0 15px 30px
+    rgba(37, 99, 235, 0.30);
+}
+
+.search-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .search-button:disabled {
   opacity: 0.65;
+
   cursor: wait;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE ACTION
-========================================= */
+========================================================= */
 
 .favorite-action {
   display: flex;
 
   justify-content: center;
 
-  margin: 5px auto 30px;
+  margin: 7px auto 32px;
 }
 
 .favorite-button {
-  border: 1px solid #bfdbfe;
+  border:
+    1px solid
+    rgba(147, 197, 253, 0.65);
 
-  background: white;
+  background:
+    rgba(255, 255, 255, 0.72);
 
   color: #2563eb;
 
   padding: 10px 20px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
   font-size: 14px;
 
-  font-weight: 600;
+  font-weight: 650;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  backdrop-filter: blur(10px);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .favorite-button:hover:not(:disabled) {
-  background: #eff6ff;
+  background: rgba(255, 255, 255, 0.95);
 
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 
   box-shadow:
-    0 5px 15px
+    0 8px 22px
     rgba(37, 99, 235, 0.12);
 }
 
@@ -260,20 +552,22 @@ input {
   opacity: 0.7;
 }
 
-/* =========================================
+
+/* =========================================================
    ERROR
-========================================= */
+========================================================= */
 
 .weather-error {
-  max-width: 650px;
+  max-width: 700px;
 
   margin: 0 auto 25px;
 
   padding: 14px 18px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: #fef2f2;
+  background:
+    rgba(254, 242, 242, 0.90);
 
   border:
     1px solid
@@ -282,38 +576,72 @@ input {
   color: #b91c1c;
 
   text-align: center;
+
+  font-size: 14px;
+
+  box-shadow:
+    0 8px 20px
+    rgba(185, 28, 28, 0.05);
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITES SECTION
-========================================= */
+========================================================= */
 
 .favorites-section {
-  margin: 0 auto 40px;
+  margin: 0 auto 42px;
 
-  max-width: 950px;
+  max-width: 1000px;
 
-  padding: 28px;
+  padding: 30px;
 
-  border-radius: 22px;
+  border-radius: 26px;
 
   background:
-    rgba(255, 255, 255, 0.72);
+    rgba(255, 255, 255, 0.67);
 
   border:
     1px solid
-    rgba(226, 232, 240, 0.9);
+    rgba(255, 255, 255, 0.80);
 
   box-shadow:
-    0 15px 40px
-    rgba(15, 23, 42, 0.07);
+    0 20px 55px
+    rgba(15, 23, 42, 0.08);
 
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  position: relative;
 }
 
-/* =========================================
+.favorites-section::before {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  top: -80px;
+  right: -70px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(147, 197, 253, 0.25),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
    FAVORITES HEADER
-========================================= */
+========================================================= */
 
 .favorites-header {
   display: flex;
@@ -322,11 +650,15 @@ input {
 
   align-items: center;
 
-  margin-bottom: 22px;
+  margin-bottom: 23px;
+
+  position: relative;
+
+  z-index: 2;
 }
 
 .favorites-header h2 {
-  font-size: 22px;
+  font-size: 23px;
 
   color: #0f172a;
 
@@ -340,24 +672,26 @@ input {
 }
 
 .favorites-count {
-  padding: 7px 13px;
+  padding: 8px 14px;
 
   border-radius: 20px;
 
-  background: #eff6ff;
+  background:
+    rgba(239, 246, 255, 0.90);
 
   color: #2563eb;
 
   font-size: 13px;
 
-  font-weight: 600;
+  font-weight: 700;
 
   white-space: nowrap;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITES LOADING
-========================================= */
+========================================================= */
 
 .favorites-loading {
   display: flex;
@@ -370,17 +704,18 @@ input {
 
   margin-bottom: 18px;
 
-  padding: 10px;
+  padding: 11px;
 
-  border-radius: 10px;
+  border-radius: 11px;
 
-  background: #eff6ff;
+  background:
+    rgba(239, 246, 255, 0.85);
 
   color: #2563eb;
 
   font-size: 13px;
 
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .loading-spinner {
@@ -389,8 +724,7 @@ input {
   font-size: 17px;
 
   animation:
-    favorite-spin 1s
-    linear infinite;
+    favorite-spin 1s linear infinite;
 }
 
 @keyframes favorite-spin {
@@ -403,9 +737,10 @@ input {
   }
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITES GRID
-========================================= */
+========================================================= */
 
 .favorites-grid {
   display: grid;
@@ -414,11 +749,16 @@ input {
     repeat(3, minmax(0, 1fr));
 
   gap: 18px;
+
+  position: relative;
+
+  z-index: 2;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE WEATHER CARD
-========================================= */
+========================================================= */
 
 .favorite-weather-card {
   position: relative;
@@ -427,21 +767,21 @@ input {
 
   min-height: 285px;
 
-  border-radius: 20px;
+  border-radius: 21px;
 
   background:
     linear-gradient(
       145deg,
-      #ffffff,
-      #f8fafc
+      rgba(255, 255, 255, 0.96),
+      rgba(248, 250, 252, 0.88)
     );
 
   border:
     1px solid
-    #e2e8f0;
+    rgba(226, 232, 240, 0.85);
 
   box-shadow:
-    0 8px 25px
+    0 10px 28px
     rgba(15, 23, 42, 0.07);
 
   cursor: pointer;
@@ -459,33 +799,40 @@ input {
 
   position: absolute;
 
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
 
-  top: -60px;
-  right: -60px;
+  top: -80px;
+  right: -75px;
 
   border-radius: 50%;
 
   background:
-    rgba(219, 234, 254, 0.65);
+    radial-gradient(
+      circle,
+      rgba(191, 219, 254, 0.75),
+      rgba(219, 234, 254, 0.25) 55%,
+      transparent 72%
+    );
 
   pointer-events: none;
 }
 
 .favorite-weather-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
 
-  border-color: #bfdbfe;
+  border-color:
+    rgba(147, 197, 253, 0.75);
 
   box-shadow:
-    0 16px 35px
-    rgba(37, 99, 235, 0.12);
+    0 18px 40px
+    rgba(37, 99, 235, 0.13);
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE CARD HEADER
-========================================= */
+========================================================= */
 
 .favorite-card-header {
   display: flex;
@@ -496,7 +843,7 @@ input {
 
   position: relative;
 
-  z-index: 1;
+  z-index: 2;
 }
 
 .favorite-city-info h3 {
@@ -525,13 +872,14 @@ input {
   text-overflow: ellipsis;
 }
 
-/* =========================================
+
+/* =========================================================
    REMOVE FAVORITE
-========================================= */
+========================================================= */
 
 .remove-favorite {
-  width: 32px;
-  height: 32px;
+  width: 33px;
+  height: 33px;
 
   display: flex;
 
@@ -546,7 +894,7 @@ input {
 
   color: #dc2626;
 
-  font-size: 22px;
+  font-size: 21px;
 
   line-height: 1;
 
@@ -554,24 +902,25 @@ input {
 
   flex-shrink: 0;
 
-  transition: 0.2s ease;
-
   position: relative;
 
   z-index: 5;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .remove-favorite:hover {
   background: #fee2e2;
 
-  color: #b91c1c;
-
   transform: scale(1.08);
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE WEATHER MAIN
-========================================= */
+========================================================= */
 
 .favorite-weather-main {
   display: flex;
@@ -581,6 +930,10 @@ input {
   gap: 15px;
 
   margin-top: 18px;
+
+  position: relative;
+
+  z-index: 2;
 }
 
 .favorite-weather-icon {
@@ -591,12 +944,18 @@ input {
   min-width: 55px;
 
   text-align: center;
+
+  filter:
+    drop-shadow(
+      0 6px 8px
+      rgba(37, 99, 235, 0.12)
+    );
 }
 
 .favorite-temperature {
   font-size: 46px;
 
-  font-weight: 750;
+  font-weight: 800;
 
   line-height: 1;
 
@@ -613,9 +972,10 @@ input {
   margin-left: 3px;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE CONDITION
-========================================= */
+========================================================= */
 
 .favorite-condition {
   margin-top: 10px;
@@ -624,12 +984,17 @@ input {
 
   font-size: 14px;
 
-  font-weight: 600;
+  font-weight: 650;
+
+  position: relative;
+
+  z-index: 2;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE DETAILS
-========================================= */
+========================================================= */
 
 .favorite-details {
   display: grid;
@@ -645,7 +1010,11 @@ input {
 
   border-top:
     1px solid
-    #e2e8f0;
+    rgba(226, 232, 240, 0.85);
+
+  position: relative;
+
+  z-index: 2;
 }
 
 .favorite-details > div {
@@ -677,12 +1046,13 @@ input {
 
   font-size: 11px;
 
-  font-weight: 700;
+  font-weight: 750;
 }
 
-/* =========================================
+
+/* =========================================================
    FAVORITE FOOTER
-========================================= */
+========================================================= */
 
 .favorite-card-footer {
   display: flex;
@@ -702,26 +1072,31 @@ input {
   font-size: 11px;
 
   color: #94a3b8;
+
+  position: relative;
+
+  z-index: 2;
 }
 
 .view-weather {
   color: #2563eb;
 
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* =========================================
+
+/* =========================================================
    LOCATION
-========================================= */
+========================================================= */
 
 .weather-location {
   text-align: center;
 
-  margin-bottom: 25px;
+  margin-bottom: 26px;
 }
 
 .weather-location h2 {
-  font-size: 32px;
+  font-size: 33px;
 
   text-transform: capitalize;
 
@@ -736,36 +1111,41 @@ input {
   font-size: 14px;
 }
 
-/* =========================================
-   WEATHER CARD
-========================================= */
+
+/* =========================================================
+   MAIN WEATHER CARD
+========================================================= */
 
 .weather-card {
-  max-width: 850px;
+  max-width: 900px;
 
   margin: 0 auto;
 
-  padding: 35px;
+  padding: 38px;
 
-  border-radius: 25px;
+  border-radius: 27px;
 
   background:
-    rgba(255, 255, 255, 0.94);
-
-  box-shadow:
-    0 20px 50px
-      rgba(15, 23, 42, 0.10),
-    0 4px 12px
-      rgba(15, 23, 42, 0.04);
+    rgba(255, 255, 255, 0.82);
 
   border:
     1px solid
-    rgba(226, 232, 240, 0.8);
+    rgba(255, 255, 255, 0.85);
+
+  box-shadow:
+    0 25px 60px
+    rgba(15, 23, 42, 0.10),
+    0 5px 18px
+    rgba(15, 23, 42, 0.04);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-/* =========================================
+
+/* =========================================================
    MAIN WEATHER
-========================================= */
+========================================================= */
 
 .weather-main {
   display: flex;
@@ -774,25 +1154,33 @@ input {
 
   align-items: center;
 
-  gap: 25px;
+  gap: 28px;
 
   padding: 20px 0 35px;
 }
 
 .weather-icon {
-  font-size: 80px;
+  font-size: 82px;
 
   line-height: 1;
+
+  filter:
+    drop-shadow(
+      0 10px 12px
+      rgba(37, 99, 235, 0.12)
+    );
 }
 
 .temperature {
-  font-size: 68px;
+  font-size: 70px;
 
-  font-weight: 750;
+  font-weight: 800;
 
   line-height: 1;
 
   color: #0f172a;
+
+  letter-spacing: -2px;
 }
 
 .weather-description {
@@ -803,9 +1191,10 @@ input {
   color: #64748b;
 }
 
-/* =========================================
+
+/* =========================================================
    WEATHER DETAILS
-========================================= */
+========================================================= */
 
 .weather-details {
   display: grid;
@@ -821,22 +1210,25 @@ input {
 
   text-align: center;
 
-  border-radius: 15px;
+  border-radius: 16px;
 
-  background: #f8fafc;
+  background:
+    rgba(248, 250, 252, 0.75);
 
   border:
     1px solid
-    #e2e8f0;
+    rgba(226, 232, 240, 0.85);
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .weather-detail:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
 
   box-shadow:
-    0 8px 20px
+    0 9px 22px
     rgba(15, 23, 42, 0.08);
 }
 
@@ -864,9 +1256,10 @@ input {
   color: #0f172a;
 }
 
-/* =========================================
+
+/* =========================================================
    UPDATED
-========================================= */
+========================================================= */
 
 .weather-updated {
   margin-top: 25px;
@@ -878,12 +1271,13 @@ input {
   font-size: 13px;
 }
 
-/* =========================================
+
+/* =========================================================
    FORECAST SECTIONS
-========================================= */
+========================================================= */
 
 .forecast-section {
-  margin-top: 40px;
+  margin-top: 42px;
 }
 
 .forecast-section h2 {
@@ -894,9 +1288,10 @@ input {
   margin-bottom: 18px;
 }
 
-/* =========================================
+
+/* =========================================================
    24 HOUR FORECAST
-========================================= */
+========================================================= */
 
 .hourly-forecast {
   display: flex;
@@ -915,22 +1310,24 @@ input {
 
   padding: 20px 15px;
 
-  border-radius: 16px;
+  border-radius: 17px;
 
   text-align: center;
 
   flex-shrink: 0;
 
   background:
-    rgba(255, 255, 255, 0.85);
+    rgba(255, 255, 255, 0.76);
 
   border:
     1px solid
-    #e2e8f0;
+    rgba(226, 232, 240, 0.85);
 
   box-shadow:
-    0 5px 15px
+    0 7px 20px
     rgba(15, 23, 42, 0.05);
+
+  backdrop-filter: blur(10px);
 }
 
 .hourly-time {
@@ -950,7 +1347,7 @@ input {
 .hourly-temperature {
   font-size: 24px;
 
-  font-weight: 700;
+  font-weight: 750;
 
   margin-bottom: 5px;
 
@@ -973,19 +1370,22 @@ input {
   color: #475569;
 }
 
-/* =========================================
+
+/* =========================================================
    7 DAY FORECAST
-========================================= */
+========================================================= */
 
 .daily-forecast {
   display: grid;
 
   grid-template-columns:
-    repeat(7, 1fr);
+    repeat(7, minmax(120px, 1fr));
 
   gap: 12px;
 
   overflow-x: auto;
+
+  padding-bottom: 8px;
 }
 
 .daily-card {
@@ -993,20 +1393,22 @@ input {
 
   padding: 18px 12px;
 
-  border-radius: 16px;
+  border-radius: 17px;
 
   background:
-    rgba(255, 255, 255, 0.88);
+    rgba(255, 255, 255, 0.80);
 
   border:
     1px solid
-    #e2e8f0;
+    rgba(226, 232, 240, 0.85);
 
   text-align: center;
 
   box-shadow:
-    0 5px 15px
+    0 6px 18px
     rgba(15, 23, 42, 0.05);
+
+  backdrop-filter: blur(10px);
 }
 
 .daily-card h3 {
@@ -1066,9 +1468,10 @@ input {
   margin-top: 5px;
 }
 
-/* =========================================
+
+/* =========================================================
    AUTHENTICATION
-========================================= */
+========================================================= */
 
 .auth-page {
   min-height: 100vh;
@@ -1081,23 +1484,73 @@ input {
 
   padding: 30px 20px;
 
+  position: relative;
+
+  overflow: hidden;
+
   background:
     radial-gradient(
-      circle at top left,
-      #dbeafe 0%,
-      transparent 35%
+      circle at 15% 15%,
+      rgba(99, 102, 241, 0.25),
+      transparent 34%
     ),
     radial-gradient(
-      circle at bottom right,
-      #e0f2fe 0%,
-      transparent 35%
+      circle at 85% 15%,
+      rgba(14, 165, 233, 0.25),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 75% 85%,
+      rgba(168, 85, 247, 0.22),
+      transparent 36%
     ),
     linear-gradient(
       135deg,
-      #f8fafc,
-      #eff6ff
+      #eef6ff,
+      #f5f3ff,
+      #ecfeff
     );
 }
+
+.auth-page::before,
+.auth-page::after {
+  content: "";
+
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  filter: blur(5px);
+}
+
+.auth-page::before {
+  width: 450px;
+  height: 450px;
+
+  top: -230px;
+  left: -180px;
+
+  background:
+    rgba(129, 140, 248, 0.18);
+}
+
+.auth-page::after {
+  width: 430px;
+  height: 430px;
+
+  right: -190px;
+  bottom: -220px;
+
+  background:
+    rgba(56, 189, 248, 0.16);
+}
+
+
+/* =========================================================
+   AUTH CARD
+========================================================= */
 
 .auth-card {
   width: 100%;
@@ -1106,20 +1559,27 @@ input {
 
   padding: 42px 38px;
 
+  position: relative;
+
+  z-index: 2;
+
   background:
-    rgba(255, 255, 255, 0.96);
+    rgba(255, 255, 255, 0.88);
 
   border:
     1px solid
-    rgba(226, 232, 240, 0.9);
+    rgba(255, 255, 255, 0.85);
 
-  border-radius: 22px;
+  border-radius: 24px;
 
   box-shadow:
-    0 25px 60px
-      rgba(15, 23, 42, 0.12),
-    0 5px 15px
-      rgba(15, 23, 42, 0.05);
+    0 30px 70px
+    rgba(15, 23, 42, 0.13),
+    0 5px 20px
+    rgba(15, 23, 42, 0.05);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .auth-logo {
@@ -1127,7 +1587,7 @@ input {
 
   font-size: 25px;
 
-  font-weight: 750;
+  font-weight: 800;
 
   color: #2563eb;
 
@@ -1154,18 +1614,24 @@ input {
   margin-bottom: 30px;
 }
 
+
+/* =========================================================
+   AUTH ERROR
+========================================================= */
+
 .auth-error {
   padding: 12px 14px;
 
   margin-bottom: 20px;
 
-  border-radius: 9px;
+  border-radius: 10px;
 
   border:
     1px solid
     #fecaca;
 
-  background: #fef2f2;
+  background:
+    rgba(254, 242, 242, 0.90);
 
   color: #b91c1c;
 
@@ -1173,6 +1639,11 @@ input {
 
   text-align: center;
 }
+
+
+/* =========================================================
+   FORM
+========================================================= */
 
 .form-group {
   margin-bottom: 20px;
@@ -1187,13 +1658,13 @@ input {
 
   font-size: 14px;
 
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .form-group input {
   width: 100%;
 
-  height: 48px;
+  height: 50px;
 
   padding: 0 14px;
 
@@ -1201,9 +1672,10 @@ input {
     1px solid
     #cbd5e1;
 
-  border-radius: 10px;
+  border-radius: 11px;
 
-  background: #ffffff;
+  background:
+    rgba(255, 255, 255, 0.90);
 
   color: #0f172a;
 
@@ -1211,7 +1683,10 @@ input {
 
   outline: none;
 
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .form-group input::placeholder {
@@ -1219,45 +1694,61 @@ input {
 }
 
 .form-group input:focus {
-  border-color: #2563eb;
+  border-color: #6366f1;
 
   box-shadow:
-    0 0 0 3px
-    rgba(37, 99, 235, 0.12);
+    0 0 0 4px
+    rgba(99, 102, 241, 0.10);
+
+  transform: translateY(-1px);
 }
+
+
+/* =========================================================
+   AUTH BUTTON
+========================================================= */
 
 .auth-button {
   width: 100%;
 
-  height: 49px;
+  height: 51px;
 
   margin-top: 5px;
 
   border: none;
 
-  border-radius: 10px;
+  border-radius: 11px;
 
-  background: #2563eb;
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
 
   color: white;
 
   font-size: 15px;
 
-  font-weight: 650;
+  font-weight: 700;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  box-shadow:
+    0 10px 23px
+    rgba(37, 99, 235, 0.22);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.auth-button:hover {
-  background: #1d4ed8;
-
-  transform: translateY(-1px);
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
 
   box-shadow:
-    0 7px 18px
-    rgba(37, 99, 235, 0.22);
+    0 14px 28px
+    rgba(37, 99, 235, 0.28);
 }
 
 .auth-button:disabled {
@@ -1266,9 +1757,12 @@ input {
   cursor: not-allowed;
 
   transform: none;
-
-  box-shadow: none;
 }
+
+
+/* =========================================================
+   AUTH SWITCH
+========================================================= */
 
 .auth-switch {
   margin-top: 24px;
@@ -1283,14 +1777,21 @@ input {
 .auth-switch a {
   color: #2563eb;
 
-  font-weight: 600;
+  font-weight: 700;
 
   text-decoration: none;
 }
 
 .auth-switch a:hover {
+  color: #4f46e5;
+
   text-decoration: underline;
 }
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
 
 .back-button {
   width: 100%;
@@ -1309,16 +1810,812 @@ input {
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .back-button:hover {
   color: #2563eb;
 }
 
-/* =========================================
+
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
+
+.login-page {
+  min-height: 100vh;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 40px 20px;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(99, 102, 241, 0.35),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(14, 165, 233, 0.32),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 75% 85%,
+      rgba(168, 85, 247, 0.28),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #eef6ff 0%,
+      #f5f3ff 48%,
+      #ecfeff 100%
+    );
+}
+
+
+/* =========================================================
+   LOGIN DECORATION
+========================================================= */
+
+.login-page::before {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.12),
+      rgba(168, 85, 247, 0.12)
+    );
+
+  top: -250px;
+  left: -200px;
+
+  pointer-events: none;
+}
+
+.login-page::after {
+  content: "";
+
+  position: absolute;
+
+  width: 450px;
+  height: 450px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.13),
+      rgba(139, 92, 246, 0.12)
+    );
+
+  bottom: -220px;
+  right: -180px;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   LOGIN FLOATING WEATHER
+========================================================= */
+
+.weather-decoration {
+  position: absolute;
+
+  pointer-events: none;
+
+  user-select: none;
+
+  z-index: 1;
+
+  animation:
+    floatingWeather 6s ease-in-out infinite;
+}
+
+.decoration-one {
+  top: 12%;
+  left: 13%;
+
+  font-size: 55px;
+
+  opacity: 0.35;
+
+  filter:
+    drop-shadow(
+      0 10px 20px
+      rgba(59, 130, 246, 0.18)
+    );
+}
+
+.decoration-two {
+  top: 20%;
+  right: 16%;
+
+  font-size: 30px;
+
+  color: #6366f1;
+
+  opacity: 0.35;
+
+  animation-delay: 1s;
+}
+
+.decoration-three {
+  bottom: 14%;
+  left: 16%;
+
+  font-size: 48px;
+
+  opacity: 0.3;
+
+  animation-delay: 2s;
+}
+
+.decoration-four {
+  bottom: 18%;
+  right: 12%;
+
+  font-size: 55px;
+
+  opacity: 0.25;
+
+  animation-delay: 3s;
+}
+
+@keyframes floatingWeather {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+
+/* =========================================================
+   LOGIN WRAPPER
+========================================================= */
+
+.login-wrapper {
+  width: 100%;
+
+  max-width: 500px;
+
+  position: relative;
+
+  z-index: 5;
+}
+
+
+/* =========================================================
+   LOGIN CARD
+========================================================= */
+
+.login-card {
+  width: 100%;
+
+  padding: 42px 44px 32px;
+
+  border-radius: 28px;
+
+  background:
+    rgba(255, 255, 255, 0.82);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.85);
+
+  box-shadow:
+    0 30px 80px
+      rgba(30, 64, 175, 0.14),
+    0 10px 30px
+      rgba(15, 23, 42, 0.08);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  animation:
+    loginCardAppear 0.7s ease forwards;
+}
+
+@keyframes loginCardAppear {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(25px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   LOGIN BRAND
+========================================================= */
+
+.login-brand {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 11px;
+
+  margin-bottom: 28px;
+}
+
+.brand-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dbeafe,
+      #ede9fe
+    );
+
+  font-size: 25px;
+
+  box-shadow:
+    0 8px 20px
+    rgba(79, 70, 229, 0.16);
+}
+
+.brand-name {
+  font-size: 30px;
+
+  font-weight: 800;
+
+  letter-spacing: -1px;
+
+  color: #172554;
+}
+
+.brand-name span {
+  background:
+    linear-gradient(
+      90deg,
+      #2563eb,
+      #7c3aed
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+}
+
+
+/* =========================================================
+   LOGIN HEADING
+========================================================= */
+
+.login-heading {
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.login-heading h1 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 36px;
+
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  letter-spacing: -1.2px;
+}
+
+.login-heading p {
+  margin: 10px 0 0;
+
+  color: #64748b;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   LOGIN ERROR
+========================================================= */
+
+.login-error {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 12px 14px;
+
+  margin-bottom: 20px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(254, 226, 226, 0.85);
+
+  border:
+    1px solid
+    #fecaca;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   LOGIN FORM
+========================================================= */
+
+.login-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+.input-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+.input-group label,
+.password-label label {
+  color: #1e293b;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+.password-label {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.password-label span {
+  color: #6366f1;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+   LOGIN INPUT
+========================================================= */
+
+.input-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+
+  left: 16px;
+
+  font-size: 17px;
+
+  opacity: 0.7;
+
+  z-index: 2;
+}
+
+.input-wrapper input {
+  width: 100%;
+
+  height: 56px;
+
+  padding:
+    0
+    16px
+    0
+    48px;
+
+  border-radius: 14px;
+
+  border:
+    1px solid
+    #dbe3ef;
+
+  outline: none;
+
+  background:
+    rgba(248, 250, 252, 0.9);
+
+  color: #0f172a;
+
+  font-size: 15px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.input-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.input-wrapper input:hover {
+  background: #ffffff;
+
+  border-color: #cbd5e1;
+}
+
+.input-wrapper input:focus {
+  background: #ffffff;
+
+  border-color: #6366f1;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(99, 102, 241, 0.1);
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.login-button {
+  width: 100%;
+
+  height: 57px;
+
+  margin-top: 5px;
+
+  border: none;
+
+  border-radius: 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  cursor: pointer;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: 750;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb 0%,
+      #4f46e5 50%,
+      #7c3aed 100%
+    );
+
+  box-shadow:
+    0 12px 25px
+    rgba(79, 70, 229, 0.28);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 16px 32px
+    rgba(79, 70, 229, 0.34);
+
+  filter: brightness(1.04);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.75;
+
+  cursor: not-allowed;
+}
+
+.button-arrow {
+  font-size: 21px;
+
+  transition:
+    transform 0.2s ease;
+}
+
+.login-button:hover .button-arrow {
+  transform: translateX(4px);
+}
+
+
+/* =========================================================
+   LOGIN SPINNER
+========================================================= */
+
+.login-spinner {
+  width: 19px;
+  height: 19px;
+
+  border:
+    2px solid
+    rgba(255, 255, 255, 0.4);
+
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation:
+    loginSpin 0.8s linear infinite;
+}
+
+@keyframes loginSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   SIGN UP SECTION
+========================================================= */
+
+.signup-section {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 24px;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+.signup-section a {
+  color: #2563eb;
+
+  font-weight: 750;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.signup-section a:hover {
+  color: #7c3aed;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   BACK TO WEATHER
+========================================================= */
+
+.back-weather {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 22px;
+
+  color: #64748b;
+
+  font-size: 14px;
+
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.back-weather span {
+  font-size: 18px;
+}
+
+.back-weather:hover {
+  color: #4f46e5;
+
+  transform: translateX(-2px);
+}
+
+
+/* =========================================================
+   LOGIN FOOTER
+========================================================= */
+
+.login-footer {
+  margin-top: 28px;
+
+  text-align: center;
+}
+
+.footer-line {
+  width: 100%;
+
+  height: 1px;
+
+  margin-bottom: 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #dbe3ef,
+      transparent
+    );
+}
+
+.powered-by {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #94a3b8;
+
+  font-size: 12px;
+}
+
+.powered-by strong {
+  color: #334155;
+
+  font-weight: 750;
+}
+
+.instagram-link {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 8px;
+
+  color: #7c3aed;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.instagram-link:hover {
+  color: #db2777;
+
+  transform: translateY(-1px);
+}
+
+.instagram-icon {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f97316,
+      #ec4899,
+      #8b5cf6
+    );
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 800;
+}
+
+.login-footer p {
+  margin: 13px 0 0;
+
+  color: #a1aabd;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
    TABLET
-========================================= */
+========================================================= */
 
 @media (max-width: 900px) {
 
@@ -1338,9 +2635,10 @@ input {
   }
 }
 
-/* =========================================
-   MOBILE
-========================================= */
+
+/* =========================================================
+   TABLET / SMALL LAPTOP
+========================================================= */
 
 @media (max-width: 800px) {
 
@@ -1351,27 +2649,95 @@ input {
   .weather-container {
     width: 92%;
 
-    padding-top: 40px;
+    padding-top: 45px;
   }
 
   .weather-container > h1 {
-    font-size: 32px;
+    font-size: 35px;
   }
 
   .favorites-section {
-    padding: 20px;
+    padding: 23px;
   }
 
   .weather-card {
-    padding: 25px 18px;
+    padding: 28px 20px;
   }
 }
 
-/* =========================================
-   SMALL MOBILE
-========================================= */
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 600px) {
+
+  .weather-header {
+    flex-direction: column;
+
+    gap: 12px;
+
+    padding: 15px 5%;
+  }
+
+  .user-section {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .weather-container {
+    width: 92%;
+
+    padding:
+      35px
+      0
+      60px;
+  }
+
+  .weather-container > h1 {
+    font-size: 29px;
+
+    letter-spacing: -0.8px;
+  }
+
+  .weather-subtitle {
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    margin-bottom: 28px;
+  }
+
+
+  /* Search */
+
+  .weather-search {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .weather-search input {
+    width: 100%;
+
+    height: 52px;
+  }
+
+  .search-button {
+    width: 100%;
+
+    height: 52px;
+  }
+
+
+  /* Favorites */
+
+  .favorites-section {
+    padding: 19px;
+
+    border-radius: 20px;
+  }
 
   .favorites-grid {
     grid-template-columns: 1fr;
@@ -1383,46 +2749,25 @@ input {
     gap: 12px;
   }
 
+  .favorites-header h2 {
+    font-size: 20px;
+  }
+
   .favorites-count {
     font-size: 11px;
 
     padding: 6px 10px;
   }
 
-  .weather-header {
-    flex-direction: column;
 
-    gap: 12px;
-  }
+  /* Weather */
 
-  .user-section {
-    width: 100%;
+  .weather-card {
+    padding:
+      25px
+      17px;
 
-    justify-content: center;
-  }
-
-  .weather-container > h1 {
-    font-size: 28px;
-  }
-
-  .weather-subtitle {
-    font-size: 14px;
-
-    line-height: 1.5;
-  }
-
-  .weather-search {
-    flex-direction: column;
-  }
-
-  .weather-search input {
-    width: 100%;
-  }
-
-  .search-button {
-    width: 100%;
-
-    height: 50px;
+    border-radius: 21px;
   }
 
   .weather-main {
@@ -1453,13 +2798,87 @@ input {
   .weather-detail:last-child {
     grid-column: span 2;
   }
+
+
+  /* Auth */
+
+  .auth-page {
+    padding: 20px 15px;
+  }
+
+  .auth-card {
+    padding:
+      32px
+      24px
+      25px;
+
+    border-radius: 22px;
+  }
+
+
+  /* Login */
+
+  .login-page {
+    padding: 20px 15px;
+  }
+
+  .login-card {
+    padding:
+      32px
+      24px
+      25px;
+
+    border-radius: 23px;
+  }
+
+  .login-heading h1 {
+    font-size: 30px;
+  }
+
+  .brand-name {
+    font-size: 27px;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+
+    font-size: 22px;
+  }
+
+  .weather-decoration {
+    display: none;
+  }
+
+  .signup-section {
+    flex-direction: column;
+
+    gap: 4px;
+  }
 }
 
-/* =========================================
+
+/* =========================================================
    VERY SMALL MOBILE
-========================================= */
+========================================================= */
 
 @media (max-width: 400px) {
+
+  .weather-logo {
+    font-size: 22px;
+  }
+
+  .user-section {
+    font-size: 13px;
+
+    gap: 10px;
+  }
+
+  .user-section button {
+    padding:
+      8px
+      14px;
+  }
 
   .favorites-section {
     padding: 16px;
@@ -1486,6 +2905,50 @@ input {
   }
 
   .weather-card {
-    padding: 20px 14px;
+    padding:
+      20px
+      14px;
+  }
+
+
+  /* Login */
+
+  .login-card {
+    padding:
+      28px
+      18px
+      22px;
+  }
+
+  .login-heading h1 {
+    font-size: 27px;
+  }
+
+  .input-wrapper input {
+    height: 52px;
+  }
+
+  .login-button {
+    height: 53px;
+  }
+}
+
+
+/* =========================================================
+   REDUCE ANIMATION FOR USERS WHO PREFER IT
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
   }
 }

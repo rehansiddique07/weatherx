@@ -1,9 +1,10 @@
 package com.weatherx.backend.repository;
 
-import com.weatherx.backend.entity.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.weatherx.backend.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

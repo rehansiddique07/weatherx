@@ -1,16 +1,20 @@
 package com.weatherx.backend.controller;
 
-import com.weatherx.backend.entity.User;
-import com.weatherx.backend.repository.UserRepository;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import com.weatherx.backend.model.User;
+import com.weatherx.backend.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
@@ -20,14 +24,28 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    // ==========================================
     // SIGNUP
-    @PostMapping
+    // POST /api/users
+    // ==========================================
+
+    @PostMapping("/users")
     public ResponseEntity<?> signup(@RequestBody User user) {
+
+        if (user.getName() == null ||
+            user.getEmail() == null ||
+            user.getPassword() == null) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Name, email and password are required.");
+        }
 
         Optional<User> existingUser =
                 userRepository.findByEmail(user.getEmail());
 
         if (existingUser.isPresent()) {
+
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("Email already registered.");
@@ -35,7 +53,7 @@ public class UserController {
 
         User savedUser = userRepository.save(user);
 
-        // Don't return password to frontend
+        // Never return password to frontend
         savedUser.setPassword(null);
 
         return ResponseEntity
@@ -43,14 +61,28 @@ public class UserController {
                 .body(savedUser);
     }
 
+    // ==========================================
     // LOGIN
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    // POST /api/auth/login
+    // ==========================================
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> login(
+            @RequestBody LoginRequest request) {
+
+        if (request.getEmail() == null ||
+            request.getPassword() == null) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Email and password are required.");
+        }
 
         Optional<User> userOptional =
                 userRepository.findByEmail(request.getEmail());
 
         if (userOptional.isEmpty()) {
+
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid email or password.");
@@ -59,18 +91,22 @@ public class UserController {
         User user = userOptional.get();
 
         if (!user.getPassword().equals(request.getPassword())) {
+
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid email or password.");
         }
 
-        // Don't return password
+        // Never return password to frontend
         user.setPassword(null);
 
         return ResponseEntity.ok(user);
     }
 
-    // Login request body
+    // ==========================================
+    // LOGIN REQUEST
+    // ==========================================
+
     public static class LoginRequest {
 
         private String email;
