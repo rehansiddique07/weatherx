@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API_URL from "../../config/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function Login() {
       console.log("Sending login request...");
 
       const response = await fetch(
-        "http://localhost:8080/api/auth/login",
+        `${API_URL}/api/auth/login`,
         {
           method: "POST",
           headers: {
@@ -69,20 +70,17 @@ function Login() {
         return;
       }
 
-      // Save logged-in user
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("user", JSON.stringify(data));
 
       console.log("Login successful:", data);
 
-      // Go to home page
       navigate("/", { replace: true });
-
     } catch (err) {
       console.error("Login error:", err);
 
       setError(
-        "Unable to connect to server. Make sure the backend is running on port 8080."
+        "Unable to connect to server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -92,7 +90,6 @@ function Login() {
   return (
     <div className="login-page">
 
-      {/* Decorative background */}
       <div className="weather-decoration decoration-one">
         ☁️
       </div>
@@ -113,7 +110,6 @@ function Login() {
 
         <section className="login-card">
 
-          {/* Logo */}
           <div className="login-brand">
 
             <div className="brand-icon">
@@ -126,7 +122,6 @@ function Login() {
 
           </div>
 
-          {/* Heading */}
           <div className="login-heading">
 
             <h1>Welcome Back</h1>
@@ -137,7 +132,6 @@ function Login() {
 
           </div>
 
-          {/* Error */}
           {error && (
             <div className="login-error">
               <span>⚠️</span>
@@ -145,13 +139,11 @@ function Login() {
             </div>
           )}
 
-          {/* Login Form */}
           <form
             className="login-form"
             onSubmit={handleLogin}
           >
 
-            {/* Email */}
             <div className="input-group">
 
               <label htmlFor="email">
@@ -180,7 +172,6 @@ function Login() {
 
             </div>
 
-            {/* Password */}
             <div className="input-group">
 
               <div className="password-label">
@@ -217,7 +208,6 @@ function Login() {
 
             </div>
 
-            {/* Button */}
             <button
               type="submit"
               className="login-button"
@@ -242,7 +232,6 @@ function Login() {
 
           </form>
 
-          {/* Signup */}
           <div className="signup-section">
 
             <span>
@@ -255,7 +244,6 @@ function Login() {
 
           </div>
 
-          {/* Back */}
           <Link
             to="/"
             className="back-weather"
@@ -264,7 +252,6 @@ function Login() {
             Back to Weather
           </Link>
 
-          {/* Footer */}
           <footer className="login-footer">
 
             <div className="footer-line"></div>

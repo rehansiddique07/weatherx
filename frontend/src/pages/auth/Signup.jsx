@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API_URL from "../../config/api";
 
 function Signup() {
   const navigate = useNavigate();
@@ -16,13 +17,11 @@ function Signup() {
 
     setError("");
 
-    // Validate fields
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Validate password
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -36,28 +35,36 @@ function Signup() {
     try {
       setLoading(true);
 
-      // Send signup data to Spring Boot backend
-      const response = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}/api/users`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name.trim(),
+            email: email.trim(),
+            password: password,
+          }),
+        }
+      );
 
-      // Get backend response
-      const data = await response.json();
+      const contentType = response.headers.get("content-type");
 
-      // If backend returns an error
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+
       if (!response.ok) {
         setError(
           typeof data === "string"
             ? data
-            : "Unable to create account."
+            : data.message || "Unable to create account."
         );
         return;
       }
@@ -66,20 +73,17 @@ function Signup() {
 
       alert("Account created successfully!");
 
-      // Clear form
       setName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
 
-      // Go to login page
       navigate("/login");
-
     } catch (error) {
       console.error("Signup error:", error);
 
       setError(
-        "Unable to connect to server. Please make sure the backend is running."
+        "Unable to connect to server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -119,6 +123,7 @@ function Signup() {
               onChange={(event) =>
                 setName(event.target.value)
               }
+              disabled={loading}
             />
           </div>
 
@@ -132,6 +137,7 @@ function Signup() {
               onChange={(event) =>
                 setEmail(event.target.value)
               }
+              disabled={loading}
             />
           </div>
 
@@ -145,6 +151,7 @@ function Signup() {
               onChange={(event) =>
                 setPassword(event.target.value)
               }
+              disabled={loading}
             />
           </div>
 
@@ -158,6 +165,7 @@ function Signup() {
               onChange={(event) =>
                 setConfirmPassword(event.target.value)
               }
+              disabled={loading}
             />
           </div>
 
@@ -166,19 +174,23 @@ function Signup() {
             className="auth-button"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading
+              ? "Creating Account..."
+              : "Create Account"}
           </button>
 
         </form>
 
         <p className="auth-switch">
           Already have an account?{" "}
+
           <Link to="/login">
             Login
           </Link>
         </p>
 
         <button
+          type="button"
           className="back-button"
           onClick={() => navigate("/")}
         >

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../config/api";
 
 function Home() {
   const navigate = useNavigate();
@@ -130,7 +131,7 @@ function Home() {
         favoriteList.map(async (favorite) => {
           try {
             const response = await fetch(
-              `http://localhost:8080/api/weather?city=${encodeURIComponent(
+              `${API_URL}/api/weather?city=${encodeURIComponent(
                 favorite.city
               )}`
             );
@@ -189,7 +190,7 @@ function Home() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/favorites?userId=${userId}`
+        `${API_URL}/api/favorites?userId=${userId}`
       );
 
       if (!response.ok) {
@@ -202,7 +203,6 @@ function Home() {
 
       setFavorites(data);
 
-      // Load live weather for every favorite
       await loadFavoriteWeather(data);
     } catch (err) {
       console.error(
@@ -231,7 +231,7 @@ function Home() {
       setError("");
 
       const response = await fetch(
-        `http://localhost:8080/api/weather?city=${encodeURIComponent(
+        `${API_URL}/api/weather?city=${encodeURIComponent(
           cleanCity
         )}`
       );
@@ -366,7 +366,7 @@ function Home() {
       setError("");
 
       const response = await fetch(
-        `http://localhost:8080/api/favorites?userId=${userId}&city=${encodeURIComponent(
+        `${API_URL}/api/favorites?userId=${userId}&city=${encodeURIComponent(
           cleanCity
         )}`,
         {
@@ -413,7 +413,7 @@ function Home() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/favorites?userId=${userId}&city=${encodeURIComponent(
+        `${API_URL}/api/favorites?userId=${userId}&city=${encodeURIComponent(
           favoriteCity
         )}`,
         {
@@ -427,7 +427,6 @@ function Home() {
         );
       }
 
-      // Immediately remove weather from state
       setFavoriteWeather(
         (previous) => {
           const updated = {
