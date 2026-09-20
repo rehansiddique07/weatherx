@@ -1,26 +1,53 @@
 package com.weatherx.backend.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 public class WeatherController {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/api/weather")
-    public String getWeather(@RequestParam String city) {
+    public ResponseEntity<?> getWeather(@RequestParam String city) {
 
         try {
 
+            if (city == null || city.trim().isEmpty()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "error",
+                                "City name is required."
+                        ));
+            }
+
+            String cleanCity = city.trim();
+
+            String encodedCity = URLEncoder.encode(
+                    cleanCity,
+                    StandardCharsets.UTF_8
+            );
+
             String geoUrl =
                     "https://geocoding-api.open-meteo.com/v1/search"
-                    + "?name=" + city
+                    + "?name=" + encodedCity
                     + "&count=1"
                     + "&language=en"
                     + "&format=json";
+
+            System.out.println("Geocoding URL: " + geoUrl);
 
             String locationResponse =
                     restTemplate.getForObject(
@@ -28,49 +55,126 @@ public class WeatherController {
                             String.class
                     );
 
-            if (locationResponse == null
-                    || !locationResponse.contains("\"latitude\"")) {
+            System.out.println(
+                    "Geocoding response: "
+                            + locationResponse
+            );
 
-                throw new RuntimeException(
-                        "City not found"
-                );
+            if (locationResponse == null
+                    || locationResponse.isBlank()) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "error",
+                                "No response received from weather service."
+                        ));
             }
 
-            double latitude = extractNumber(
-                    locationResponse,
-                    "\"latitude\":"
+            JsonNode locationJson =
+                    objectMapper.readTree(locationResponse);
+
+            JsonNode results =
+                    locationJson.get("results");
+
+            if (results == null
+                    || !results.isArray()
+                    || results.isEmpty()) {
+
+                return ResponseEntity
+                        .status(404)
+                        .body(Map.of(
+                                "error",
+                                "City not found: " + cleanCity
+                        ));
+            }
+
+            JsonNode location = results.get(0);
+
+            if (!location.has("latitude")
+                    || !location.has("longitude")) {
+
+                return ResponseEntity
+                        .status(404)
+                        .body(Map.of(
+                                "error",
+                                "Location coordinates not found."
+                        ));
+            }
+
+            double latitude =
+                    location.get("latitude").asDouble();
+
+            double longitude =
+                    location.get("longitude").asDouble();
+
+            System.out.println(
+                    "Location found: "
+                            + latitude
+                            + ", "
+                            + longitude
             );
 
-            double longitude = extractNumber(
-                    locationResponse,
-                    "\"longitude\":"
-            );
+            String weatherData =
+                    getWeatherData(
+                            latitude,
+                            longitude
+                    );
 
-            return getWeatherData(
-                    latitude,
-                    longitude
+            return ResponseEntity.ok(
+                    objectMapper.readTree(weatherData)
             );
 
         } catch (Exception e) {
+
             e.printStackTrace();
 
-            throw new RuntimeException(
-                    "Unable to find weather for this city: "
-                    + e.getMessage()
-            );
+            return ResponseEntity
+                    .internalServerError()
+                    .body(Map.of(
+                            "error",
+                            "Weather service error.",
+                            "message",
+                            e.getMessage() != null
+                                    ? e.getMessage()
+                                    : "Unknown error"
+                    ));
         }
     }
 
     @GetMapping("/api/weather/location")
-    public String getWeatherByLocation(
+    public ResponseEntity<?> getWeatherByLocation(
             @RequestParam double latitude,
             @RequestParam double longitude
     ) {
 
-        return getWeatherData(
-                latitude,
-                longitude
-        );
+        try {
+
+            String weatherData =
+                    getWeatherData(
+                            latitude,
+                            longitude
+                    );
+
+            return ResponseEntity.ok(
+                    objectMapper.readTree(weatherData)
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(Map.of(
+                            "error",
+                            "Unable to fetch weather.",
+                            "message",
+                            e.getMessage() != null
+                                    ? e.getMessage()
+                                    : "Unknown error"
+                    ));
+        }
     }
 
     private String getWeatherData(
@@ -102,46 +206,24 @@ public class WeatherController {
                 + "&forecast_days=7"
                 + "&timezone=auto";
 
-        return restTemplate.getForObject(
-                weatherUrl,
-                String.class
+        System.out.println(
+                "Weather URL: " + weatherUrl
         );
-    }
 
-    private double extractNumber(
-            String json,
-            String key
-    ) {
+        String response =
+                restTemplate.getForObject(
+                        weatherUrl,
+                        String.class
+                );
 
-        int start = json.indexOf(key);
-
-        if (start == -1) {
+        if (response == null
+                || response.isBlank()) {
 
             throw new RuntimeException(
-                    "Could not find " + key
+                    "Empty response from Open-Meteo."
             );
         }
 
-        start += key.length();
-
-        int end = start;
-
-        while (
-                end < json.length()
-                        && (
-                        Character.isDigit(
-                                json.charAt(end)
-                        )
-                        || json.charAt(end) == '.'
-                        || json.charAt(end) == '-'
-                        )
-        ) {
-
-            end++;
-        }
-
-        return Double.parseDouble(
-                json.substring(start, end)
-        );
+        return response;
     }
 }
