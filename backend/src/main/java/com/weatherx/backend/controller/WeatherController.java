@@ -6,14 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-
 public class WeatherController {
 
     private final RestTemplate restTemplate = new RestTemplate();
-
-    // ==========================================
-    // Search weather by city
-    // ==========================================
 
     @GetMapping("/api/weather")
     public String getWeather(@RequestParam String city) {
@@ -57,16 +52,14 @@ public class WeatherController {
             );
 
         } catch (Exception e) {
+            e.printStackTrace();
 
             throw new RuntimeException(
-                    "Unable to find weather for this city."
+                    "Unable to find weather for this city: "
+                    + e.getMessage()
             );
         }
     }
-
-    // ==========================================
-    // Weather by latitude and longitude
-    // ==========================================
 
     @GetMapping("/api/weather/location")
     public String getWeatherByLocation(
@@ -79,10 +72,6 @@ public class WeatherController {
                 longitude
         );
     }
-
-    // ==========================================
-    // Open-Meteo Weather API
-    // ==========================================
 
     private String getWeatherData(
             double latitude,
@@ -118,10 +107,6 @@ public class WeatherController {
                 String.class
         );
     }
-
-    // ==========================================
-    // Extract number from JSON
-    // ==========================================
 
     private double extractNumber(
             String json,
