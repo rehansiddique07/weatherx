@@ -62,7 +62,7 @@ public class WeatherController {
                     )
                     .queryParam("key", weatherApiKey)
                     .queryParam("q", query)
-                    .queryParam("days", 7)
+                    .queryParam("days", 3)
                     .queryParam("aqi", "no")
                     .queryParam("alerts", "no")
                     .build()
