@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +19,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class WeatherController {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${WEATHER_API_KEY}")
     private String weatherApiKey;
@@ -69,24 +73,25 @@ public class WeatherController {
                     .encode()
                     .toUri();
 
-            JsonNode root =
-                    restTemplate.getForObject(
-                            uri,
-                            JsonNode.class
-                    );
+            String jsonResponse = restTemplate.getForObject(
+                    uri,
+                    String.class
+            );
 
-            if (root == null) {
+            if (jsonResponse == null || jsonResponse.isBlank()) {
                 throw new RuntimeException(
                         "Empty response from weather service."
                 );
             }
 
+            JsonNode root = objectMapper.readTree(jsonResponse);
+
             if (root.has("error")) {
 
-                String message =
-                        root.path("error")
-                                .path("message")
-                                .asText("Weather service error.");
+                String message = root
+                        .path("error")
+                        .path("message")
+                        .asText("Weather service error.");
 
                 throw new RuntimeException(message);
             }
@@ -98,6 +103,8 @@ public class WeatherController {
             throw new RuntimeException(
                     "Weather service returned HTTP "
                             + e.getStatusCode().value()
+                            + ": "
+                            + e.getResponseBodyAsString()
             );
 
         } catch (Exception e) {
@@ -117,17 +124,12 @@ public class WeatherController {
             JsonNode root
     ) {
 
-        Map<String, Object> response =
-                new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-        JsonNode location =
-                root.path("location");
+        JsonNode location = root.path("location");
+        JsonNode current = root.path("current");
 
-        JsonNode current =
-                root.path("current");
-
-        Map<String, Object> currentData =
-                new HashMap<>();
+        Map<String, Object> currentData = new HashMap<>();
 
         currentData.put(
                 "temperature_2m",
@@ -221,17 +223,15 @@ public class WeatherController {
             Map<String, Object> response
     ) {
 
-        List<JsonNode> allHours =
-                new ArrayList<>();
+        List<JsonNode> allHours = new ArrayList<>();
 
-        JsonNode forecastDays =
-                root.path("forecast")
-                        .path("forecastday");
+        JsonNode forecastDays = root
+                .path("forecast")
+                .path("forecastday");
 
         for (JsonNode day : forecastDays) {
 
-            JsonNode hours =
-                    day.path("hour");
+            JsonNode hours = day.path("hour");
 
             for (JsonNode hour : hours) {
                 allHours.add(hour);
@@ -244,55 +244,33 @@ public class WeatherController {
                 )
         );
 
-        String currentTime =
-                root.path("location")
-                        .path("localtime")
-                        .asText();
+        String currentTime = root
+                .path("location")
+                .path("localtime")
+                .asText();
 
-        int startIndex =
-                findStartingHour(
-                        allHours,
-                        currentTime
-                );
+        int startIndex = findStartingHour(
+                allHours,
+                currentTime
+        );
 
-        List<String> times =
-                new ArrayList<>();
+        List<String> times = new ArrayList<>();
+        List<Double> temperatures = new ArrayList<>();
+        List<Double> humidity = new ArrayList<>();
+        List<Double> apparentTemperature = new ArrayList<>();
+        List<Integer> precipitationProbability = new ArrayList<>();
+        List<Double> precipitation = new ArrayList<>();
+        List<Integer> weatherCodes = new ArrayList<>();
+        List<Double> windSpeed = new ArrayList<>();
 
-        List<Double> temperatures =
-                new ArrayList<>();
+        int endIndex = Math.min(
+                startIndex + 24,
+                allHours.size()
+        );
 
-        List<Double> humidity =
-                new ArrayList<>();
+        for (int i = startIndex; i < endIndex; i++) {
 
-        List<Double> apparentTemperature =
-                new ArrayList<>();
-
-        List<Integer> precipitationProbability =
-                new ArrayList<>();
-
-        List<Double> precipitation =
-                new ArrayList<>();
-
-        List<Integer> weatherCodes =
-                new ArrayList<>();
-
-        List<Double> windSpeed =
-                new ArrayList<>();
-
-        int endIndex =
-                Math.min(
-                        startIndex + 24,
-                        allHours.size()
-                );
-
-        for (
-                int i = startIndex;
-                i < endIndex;
-                i++
-        ) {
-
-            JsonNode hour =
-                    allHours.get(i);
+            JsonNode hour = allHours.get(i);
 
             times.add(
                     hour.path("time").asText()
@@ -331,8 +309,7 @@ public class WeatherController {
             );
         }
 
-        Map<String, Object> hourly =
-                new HashMap<>();
+        Map<String, Object> hourly = new HashMap<>();
 
         hourly.put(
                 "time",
@@ -387,21 +364,19 @@ public class WeatherController {
 
         try {
 
-            LocalDateTime now =
-                    LocalDateTime.parse(
-                            currentTime,
-                            DATE_TIME_FORMATTER
-                    );
+            LocalDateTime now = LocalDateTime.parse(
+                    currentTime,
+                    DATE_TIME_FORMATTER
+            );
 
             for (int i = 0; i < hours.size(); i++) {
 
-                LocalDateTime hour =
-                        LocalDateTime.parse(
-                                hours.get(i)
-                                        .path("time")
-                                        .asText(),
-                                DATE_TIME_FORMATTER
-                        );
+                LocalDateTime hour = LocalDateTime.parse(
+                        hours.get(i)
+                                .path("time")
+                                .asText(),
+                        DATE_TIME_FORMATTER
+                );
 
                 if (!hour.isBefore(now)) {
                     return i;
@@ -479,5 +454,27 @@ public class WeatherController {
 
             default -> 3;
         };
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(
+            Exception e
+    ) {
+
+        Map<String, Object> error = new HashMap<>();
+
+        error.put(
+                "error",
+                true
+        );
+
+        error.put(
+                "message",
+                e.getMessage()
+        );
+
+        return ResponseEntity
+                .status(500)
+                .body(error);
     }
 }
