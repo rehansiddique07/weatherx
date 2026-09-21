@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API_URL from "../../config/api";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
