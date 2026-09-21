@@ -17,25 +17,22 @@ function Home() {
     useState(false);
 
   const user = JSON.parse(
-    localStorage.getItem("user") || "{}"
+    localStorage.getItem("user") || "null"
   );
 
-  const userId = user.id;
-
-  // ==============================
-  // LOGOUT
-  // ==============================
+  const userId = user?.id;
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
 
+    setWeather(null);
+    setHourly([]);
+    setFavorites([]);
+    setFavoriteWeather({});
+
     navigate("/login", { replace: true });
   };
-
-  // ==============================
-  // WEATHER ICON
-  // ==============================
 
   const getWeatherIcon = (code) => {
     if (code === 0) {
@@ -73,10 +70,6 @@ function Home() {
     return "☁️";
   };
 
-  // ==============================
-  // WEATHER DESCRIPTION
-  // ==============================
-
   const getWeatherDescription = (code) => {
     if (code === 0) return "Clear Sky";
     if (code === 1) return "Mainly Clear";
@@ -113,10 +106,6 @@ function Home() {
 
     return "Unknown";
   };
-
-  // ==============================
-  // LOAD WEATHER FOR ALL FAVORITES
-  // ==============================
 
   const loadFavoriteWeather = async (favoriteList) => {
     if (!favoriteList || favoriteList.length === 0) {
@@ -179,10 +168,6 @@ function Home() {
     }
   };
 
-  // ==============================
-  // LOAD FAVORITES
-  // ==============================
-
   const loadFavorites = async () => {
     if (!userId) {
       return;
@@ -212,17 +197,11 @@ function Home() {
     }
   };
 
-  // ==============================
-  // SEARCH WEATHER
-  // ==============================
-
   const searchWeather = async (searchCity) => {
     const cleanCity = searchCity.trim();
 
     if (!cleanCity) {
-      setError(
-        "Please enter a city name."
-      );
+      setError("Please enter a city name.");
       return;
     }
 
@@ -253,10 +232,6 @@ function Home() {
       setWeather(data);
       setCity(cleanCity);
 
-      // ==============================
-      // HOURLY FORECAST
-      // ==============================
-
       if (
         data.hourly &&
         data.hourly.time &&
@@ -268,44 +243,31 @@ function Home() {
               time,
 
               temperature:
-                data.hourly
-                  .temperature_2m[index],
+                data.hourly.temperature_2m[index],
 
               humidity:
                 data.hourly
-                  .relative_humidity_2m?.[
-                  index
-                ],
+                  .relative_humidity_2m?.[index],
 
               apparentTemperature:
                 data.hourly
-                  .apparent_temperature?.[
-                  index
-                ],
+                  .apparent_temperature?.[index],
 
               precipitationProbability:
                 data.hourly
-                  .precipitation_probability?.[
-                  index
-                ],
+                  .precipitation_probability?.[index],
 
               precipitation:
                 data.hourly
-                  .precipitation?.[
-                  index
-                ],
+                  .precipitation?.[index],
 
               weatherCode:
                 data.hourly
-                  .weather_code?.[
-                  index
-                ],
+                  .weather_code?.[index],
 
               windSpeed:
                 data.hourly
-                  .wind_speed_10m?.[
-                  index
-                ],
+                  .wind_speed_10m?.[index],
             })
           );
 
@@ -330,19 +292,11 @@ function Home() {
     }
   };
 
-  // ==============================
-  // SEARCH FORM
-  // ==============================
-
   const handleSearch = (event) => {
     event.preventDefault();
 
     searchWeather(city);
   };
-
-  // ==============================
-  // ADD FAVORITE
-  // ==============================
 
   const addFavorite = async () => {
     const cleanCity = city.trim();
@@ -400,10 +354,6 @@ function Home() {
     }
   };
 
-  // ==============================
-  // REMOVE FAVORITE
-  // ==============================
-
   const removeFavorite = async (
     favoriteCity
   ) => {
@@ -454,19 +404,11 @@ function Home() {
     }
   };
 
-  // ==============================
-  // CLICK FAVORITE
-  // ==============================
-
   const openFavorite = (
     favoriteCity
   ) => {
     searchWeather(favoriteCity);
   };
-
-  // ==============================
-  // FORMAT HOUR
-  // ==============================
 
   const formatHour = (time) => {
     const date = new Date(time);
@@ -479,10 +421,6 @@ function Home() {
       }
     );
   };
-
-  // ==============================
-  // FORMAT DAY
-  // ==============================
 
   const formatDay = (
     dateString
@@ -501,18 +439,23 @@ function Home() {
     );
   };
 
-  // ==============================
-  // INITIAL LOAD
-  // ==============================
-
   useEffect(() => {
-    searchWeather("Patna");
-    loadFavorites();
-  }, []);
+    const isLoggedIn =
+      localStorage.getItem("isLoggedIn") === "true";
 
-  // ==============================
-  // CHECK FAVORITE
-  // ==============================
+    const storedUser =
+      localStorage.getItem("user");
+
+    if (!isLoggedIn || !storedUser) {
+      navigate("/login", {
+        replace: true,
+      });
+
+      return;
+    }
+
+    loadFavorites();
+  }, [navigate]);
 
   const isFavorite =
     favorites.some(
@@ -522,16 +465,8 @@ function Home() {
         city.trim().toLowerCase()
     );
 
-  // ==============================
-  // RENDER
-  // ==============================
-
   return (
     <div className="weather-page">
-
-      {/* =========================
-          HEADER
-      ========================= */}
 
       <header className="weather-header">
 
@@ -544,7 +479,7 @@ function Home() {
           <span>
             Welcome,{" "}
             <strong>
-              {user.name || "User"}
+              {user?.name || "User"}
             </strong>
           </span>
 
@@ -559,10 +494,6 @@ function Home() {
 
       </header>
 
-      {/* =========================
-          MAIN
-      ========================= */}
-
       <main className="weather-container">
 
         <h1>
@@ -574,10 +505,6 @@ function Home() {
           anywhere in the world
         </p>
 
-        {/* =========================
-            SEARCH
-        ========================= */}
-
         <form
           className="weather-search"
           onSubmit={handleSearch}
@@ -588,9 +515,7 @@ function Home() {
             placeholder="Enter city name..."
             value={city}
             onChange={(event) =>
-              setCity(
-                event.target.value
-              )
+              setCity(event.target.value)
             }
           />
 
@@ -606,10 +531,6 @@ function Home() {
           </button>
 
         </form>
-
-        {/* =========================
-            FAVORITE BUTTON
-        ========================= */}
 
         {weather && (
           <div className="favorite-action">
@@ -633,10 +554,6 @@ function Home() {
           </div>
         )}
 
-        {/* =========================
-            FAVORITE CITIES
-        ========================= */}
-
         {favorites.length > 0 && (
           <section className="favorites-section">
 
@@ -654,21 +571,20 @@ function Home() {
               </div>
 
               <span className="favorites-count">
-                {favorites.length}{" "}
-                {favorites.length === 1
-                  ? "saved"
-                  : "saved"}
+                {favorites.length} saved
               </span>
 
             </div>
 
             {favoriteWeatherLoading && (
               <div className="favorites-loading">
+
                 <span className="loading-spinner">
                   ⟳
                 </span>
 
                 Updating live weather...
+
               </div>
             )}
 
@@ -695,8 +611,6 @@ function Home() {
                         )
                       }
                     >
-
-                      {/* CARD HEADER */}
 
                       <div className="favorite-card-header">
 
@@ -736,8 +650,6 @@ function Home() {
 
                       </div>
 
-                      {/* WEATHER PREVIEW */}
-
                       <div className="favorite-weather-main">
 
                         <div className="favorite-weather-icon">
@@ -766,8 +678,6 @@ function Home() {
 
                       </div>
 
-                      {/* CONDITION */}
-
                       <div className="favorite-condition">
 
                         {current
@@ -777,8 +687,6 @@ function Home() {
                           : "Weather unavailable"}
 
                       </div>
-
-                      {/* WEATHER DETAILS */}
 
                       <div className="favorite-details">
 
@@ -832,8 +740,6 @@ function Home() {
 
                       </div>
 
-                      {/* FOOTER */}
-
                       <div className="favorite-card-footer">
 
                         <span>
@@ -856,19 +762,11 @@ function Home() {
           </section>
         )}
 
-        {/* =========================
-            ERROR
-        ========================= */}
-
         {error && (
           <div className="weather-error">
             {error}
           </div>
         )}
-
-        {/* =========================
-            CURRENT WEATHER
-        ========================= */}
 
         {weather &&
           weather.current && (
@@ -917,8 +815,6 @@ function Home() {
                   </div>
 
                 </div>
-
-                {/* DETAILS */}
 
                 <div className="weather-details">
 
@@ -983,6 +879,7 @@ function Home() {
                   </div>
 
                   <div className="weather-detail">
+
                     <span>
                       {weather.current.is_day
                         ? "☀️"
@@ -998,6 +895,7 @@ function Home() {
                         ? "Day"
                         : "Night"}
                     </strong>
+
                   </div>
 
                 </div>
@@ -1008,10 +906,6 @@ function Home() {
                 </p>
 
               </section>
-
-              {/* =========================
-                  24 HOUR FORECAST
-              ========================= */}
 
               {hourly.length > 0 && (
                 <section className="forecast-section">
@@ -1089,10 +983,6 @@ function Home() {
 
                 </section>
               )}
-
-              {/* =========================
-                  7 DAY FORECAST
-              ========================= */}
 
               {weather.daily && (
                 <section className="forecast-section">
